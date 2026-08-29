@@ -31,18 +31,18 @@ jobs:
 
       - name: Verificar secret
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_OAUTH_TOKEN: ${{ secrets.ANTHROPIC_OAUTH_TOKEN }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
+          if [ -z "$ANTHROPIC_OAUTH_TOKEN" ]; then
             echo "SECRET VACIO O NO CONFIGURADO"
             exit 1
           else
-            echo "Secret OK (longitud: ${#ANTHROPIC_API_KEY})"
+            echo "Secret OK (longitud: ${#ANTHROPIC_OAUTH_TOKEN})"
           fi
 
       - name: Generar reporte
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_OAUTH_TOKEN: ${{ secrets.ANTHROPIC_OAUTH_TOKEN }}
           STACK_EXCHANGE_KEY: ${{ secrets.STACK_EXCHANGE_KEY }}
         run: python generate_report.py
 

@@ -23,7 +23,29 @@ BATCH_SIZE = 20  # posts por llamada de clasificacion
 
 
 def _get_client() -> anthropic.Anthropic:
-    return anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    # OAuth token (sk-ant-oat01-…): funciona sin anthropic-workspace-id
+    oauth_token = os.getenv("ANTHROPIC_OAUTH_TOKEN")
+    if oauth_token:
+        return anthropic.Anthropic(auth_token=oauth_token)
+
+    # Fallback: leer token OAuth desde credenciales de Claude Code
+    import json
+    creds_path = os.path.expanduser("~/.claude/.credentials.json")
+    try:
+        with open(creds_path) as f:
+            creds = json.load(f)
+        token = creds.get("claudeAiOauth", {}).get("accessToken", "")
+        if token:
+            return anthropic.Anthropic(auth_token=token)
+    except Exception:
+        pass
+
+    # Ultimo recurso: API key estandar (requiere workspace-id si es identity-linked)
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if api_key:
+        return anthropic.Anthropic(api_key=api_key)
+
+    raise ValueError("No se encontro ANTHROPIC_OAUTH_TOKEN, ANTHROPIC_API_KEY ni credenciales de Claude Code")
 
 
 # ── 1. Clasificacion ───────────────────────────────────────────────────────────

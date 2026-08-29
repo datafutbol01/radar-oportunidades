@@ -29,8 +29,8 @@ TOP_N_BRIEFS = 3
 def main():
     print(f"[{datetime.now().isoformat()}] Iniciando recoleccion...")
 
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        print("ERROR: falta ANTHROPIC_API_KEY")
+    if not os.getenv("ANTHROPIC_OAUTH_TOKEN") and not os.getenv("ANTHROPIC_API_KEY"):
+        print("ERROR: falta ANTHROPIC_OAUTH_TOKEN o ANTHROPIC_API_KEY")
         sys.exit(1)
 
     posts = fetch_all(days=PERIOD_DAYS, sources=SOURCES)

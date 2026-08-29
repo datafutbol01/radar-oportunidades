@@ -371,7 +371,7 @@ Genera el brief de oportunidad con esta estructura exacta:
 
         try:
             response = client.messages.create(
-                model=SONNET,
+                model=HAIKU,
                 max_tokens=1200,
                 system=BRIEF_SYSTEM,
                 messages=[{"role": "user", "content": prompt}],

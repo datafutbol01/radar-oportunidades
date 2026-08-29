@@ -410,8 +410,14 @@ def run_analysis(
     for post in classified:
         by_category[post.get("category", "Sin categoria")].append(post)
 
-    # Top categorias por volumen
-    top_cats = sorted(by_category.keys(), key=lambda c: len(by_category[c]), reverse=True)
+    # Top categorias por porcentaje de intencion de pago (minimo 5 posts para filtrar ruido)
+    def intent_pct(cat):
+        posts_cat = by_category[cat]
+        if len(posts_cat) < 5:
+            return 0
+        return sum(1 for p in posts_cat if p.get("payment_intent", 0) >= 2) / len(posts_cat)
+
+    top_cats = sorted(by_category.keys(), key=intent_pct, reverse=True)
 
     # Paso 3: Tendencias temporales
     if progress_callback:

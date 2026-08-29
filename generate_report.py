@@ -23,7 +23,7 @@ HISTORY_DIR.mkdir(exist_ok=True)
 
 PERIOD_DAYS = 30
 SOURCES = ["Hacker News", "Stack Overflow"]
-TOP_N_BRIEFS = 3
+TOP_N_BRIEFS = 12
 
 
 def main():

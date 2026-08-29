@@ -29,6 +29,17 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt
 
+      - name: Verificar secret
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "SECRET VACIO O NO CONFIGURADO"
+            exit 1
+          else
+            echo "Secret OK (longitud: ${#ANTHROPIC_API_KEY})"
+          fi
+
       - name: Generar reporte
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

@@ -75,6 +75,13 @@ with st.sidebar:
         selected_date = "Ultimo"
 
     st.divider()
+    selected_lang = st.radio(
+        "Idioma / Region",
+        options=["Todos", "Ingles", "Espanol"],
+        index=0,
+    )
+
+    st.divider()
     if st.button("Refrescar datos", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
@@ -104,10 +111,29 @@ if res is None:
 
 # ── Variables ──────────────────────────────────────────────────────────────────
 
-meta          = res.get("meta", {})
-posts_all     = res.get("posts", [])
-by_cat        = res.get("by_category", {})
-top_cats      = res.get("top_categories", [])
+meta      = res.get("meta", {})
+posts_all = res.get("posts", [])
+
+# Filtro de idioma
+LANG_MAP = {"Ingles": "en", "Espanol": "es"}
+if selected_lang in LANG_MAP:
+    lang_code = LANG_MAP[selected_lang]
+    posts_all = [p for p in posts_all if p.get("language", "en") == lang_code]
+
+# Recalcular agrupaciones sobre los posts filtrados
+from collections import defaultdict as _dd
+by_cat = _dd(list)
+for p in posts_all:
+    by_cat[p.get("category", "Sin categoria")].append(p)
+by_cat = dict(by_cat)
+
+def _intent_pct(cat):
+    cp = by_cat.get(cat, [])
+    if len(cp) < 3:
+        return 0
+    return sum(1 for p in cp if p.get("payment_intent", 0) >= 2) / len(cp)
+
+top_cats      = sorted(by_cat.keys(), key=_intent_pct, reverse=True)
 trend_signals = res.get("trends", {}).get("trend_signals", {})
 weekly_series = res.get("trends", {}).get("weekly_series", {})
 google_trends = res.get("google_trends", {})
@@ -119,9 +145,10 @@ df = pd.DataFrame(posts_all) if posts_all else pd.DataFrame()
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 
+lang_label = {"Todos": "Global", "Ingles": "Fuentes en ingles", "Espanol": "Fuentes en espanol"}.get(selected_lang, "")
 st.markdown(f"# 📡 Radar de Oportunidades")
-st.caption(f"Datos del {run_at} · {meta.get('period_days', 30)} días · "
-           f"{meta.get('total_posts', 0):,} posts analizados")
+st.caption(f"Datos del {run_at} · {meta.get('period_days', 30)} dias · "
+           f"{len(posts_all):,} posts · {lang_label}")
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
 

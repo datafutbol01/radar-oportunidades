@@ -80,6 +80,7 @@ def fetch_hn(days: int = 30) -> list[dict]:
                         "score": hit.get("points") or 0,
                         "url": url,
                         "date": date_str,
+                        "language": "en",
                     })
 
                 time.sleep(0.2)
@@ -158,6 +159,7 @@ def fetch_stackoverflow(days: int = 30) -> list[dict]:
                         "score": item.get("score", 0),
                         "url": item.get("link", ""),
                         "date": dt.strftime("%Y-%m-%d"),
+                        "language": "en",
                     })
 
                 time.sleep(0.5)
@@ -213,7 +215,7 @@ REDDIT_QUERIES_ES = [
 ]
 
 
-def _fetch_reddit_subreddits(subreddits: list[str], queries: list[str], days: int, seen: set) -> list[dict]:
+def _fetch_reddit_subreddits(subreddits: list[str], queries: list[str], days: int, seen: set, language: str = "en") -> list[dict]:
     posts = []
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
 
@@ -252,6 +254,7 @@ def _fetch_reddit_subreddits(subreddits: list[str], queries: list[str], days: in
                         "score": item.get("score", 0),
                         "url": f"https://reddit.com{item.get('permalink', '')}",
                         "date": dt.strftime("%Y-%m-%d"),
+                        "language": language,
                     })
 
                 time.sleep(0.5)
@@ -263,8 +266,8 @@ def _fetch_reddit_subreddits(subreddits: list[str], queries: list[str], days: in
 
 def fetch_reddit(days: int = 30) -> list[dict]:
     seen = set()
-    posts = _fetch_reddit_subreddits(REDDIT_SUBREDDITS, REDDIT_QUERIES, days, seen)
-    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_ES, REDDIT_QUERIES_ES, days, seen)
+    posts = _fetch_reddit_subreddits(REDDIT_SUBREDDITS, REDDIT_QUERIES, days, seen, language="en")
+    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_ES, REDDIT_QUERIES_ES, days, seen, language="es")
     return posts
 
 

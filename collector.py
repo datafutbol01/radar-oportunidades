@@ -214,6 +214,58 @@ REDDIT_QUERIES_ES = [
     "que fastidio",
 ]
 
+REDDIT_SUBREDDITS_PT = ["brasil", "portugal"]
+REDDIT_QUERIES_PT = [
+    "queria que existisse",
+    "pagaria por",
+    "ninguem faz",
+    "por que nao existe",
+    "preciso de uma ferramenta",
+    "me irrita muito",
+    "alguem deveria criar",
+    "problema terrivel",
+    "nao tem solucao",
+]
+
+REDDIT_SUBREDDITS_FR = ["france", "Quebec"]
+REDDIT_QUERIES_FR = [
+    "j'aimerais qu'il existe",
+    "je paierais pour",
+    "personne ne fait",
+    "pourquoi ca n'existe pas",
+    "j'ai besoin d'un outil",
+    "ca m'enerve",
+    "quelqu'un devrait creer",
+    "probleme horrible",
+    "aucune solution",
+]
+
+REDDIT_SUBREDDITS_DE = ["de", "Austria"]
+REDDIT_QUERIES_DE = [
+    "ich wunschte es gabe",
+    "ich wurde bezahlen fur",
+    "niemand baut",
+    "warum gibt es das nicht",
+    "ich brauche ein tool",
+    "nervt mich",
+    "jemand sollte das bauen",
+    "schreckliches problem",
+    "keine gute losung",
+]
+
+REDDIT_SUBREDDITS_IT = ["italy", "italyInformatica"]
+REDDIT_QUERIES_IT = [
+    "vorrei che esistesse",
+    "pagherei per",
+    "nessuno lo fa",
+    "perche non esiste",
+    "ho bisogno di uno strumento",
+    "mi fa arrabbiare",
+    "qualcuno dovrebbe creare",
+    "problema terribile",
+    "nessuna soluzione",
+]
+
 
 def _fetch_reddit_subreddits(subreddits: list[str], queries: list[str], days: int, seen: set, language: str = "en") -> list[dict]:
     posts = []
@@ -268,6 +320,10 @@ def fetch_reddit(days: int = 30) -> list[dict]:
     seen = set()
     posts = _fetch_reddit_subreddits(REDDIT_SUBREDDITS, REDDIT_QUERIES, days, seen, language="en")
     posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_ES, REDDIT_QUERIES_ES, days, seen, language="es")
+    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_PT, REDDIT_QUERIES_PT, days, seen, language="pt")
+    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_FR, REDDIT_QUERIES_FR, days, seen, language="fr")
+    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_DE, REDDIT_QUERIES_DE, days, seen, language="de")
+    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_IT, REDDIT_QUERIES_IT, days, seen, language="it")
     return posts
 
 

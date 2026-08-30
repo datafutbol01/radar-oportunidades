@@ -77,7 +77,7 @@ with st.sidebar:
     st.divider()
     selected_lang = st.radio(
         "Idioma / Region",
-        options=["Todos", "Ingles", "Espanol"],
+        options=["Todos", "Ingles", "Espanol", "Portugues", "Frances", "Aleman", "Italiano"],
         index=0,
     )
 
@@ -115,7 +115,7 @@ meta      = res.get("meta", {})
 posts_all = res.get("posts", [])
 
 # Filtro de idioma
-LANG_MAP = {"Ingles": "en", "Espanol": "es"}
+LANG_MAP = {"Ingles": "en", "Espanol": "es", "Portugues": "pt", "Frances": "fr", "Aleman": "de", "Italiano": "it"}
 if selected_lang in LANG_MAP:
     lang_code = LANG_MAP[selected_lang]
     posts_all = [p for p in posts_all if p.get("language", "en") == lang_code]
@@ -145,7 +145,7 @@ df = pd.DataFrame(posts_all) if posts_all else pd.DataFrame()
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 
-lang_label = {"Todos": "Global", "Ingles": "Fuentes en ingles", "Espanol": "Fuentes en espanol"}.get(selected_lang, "")
+lang_label = {"Todos": "Global", "Ingles": "Fuentes en ingles", "Espanol": "Fuentes en espanol", "Portugues": "Fuentes en portugues", "Frances": "Fuentes en frances", "Aleman": "Fuentes en aleman", "Italiano": "Fuentes en italiano"}.get(selected_lang, "")
 st.markdown(f"# 📡 Radar de Oportunidades")
 st.caption(f"Datos del {run_at} · {meta.get('period_days', 30)} dias · "
            f"{len(posts_all):,} posts · {lang_label}")

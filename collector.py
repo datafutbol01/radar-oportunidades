@@ -192,14 +192,33 @@ REDDIT_QUERIES = [
     "no good solution",
 ]
 
+REDDIT_SUBREDDITS_ES = [
+    "argentina",
+    "es",
+]
 
-def fetch_reddit(days: int = 30) -> list[dict]:
+REDDIT_QUERIES_ES = [
+    "ojala existiera",
+    "pagaria por",
+    "nadie hace",
+    "por que no existe",
+    "necesito una herramienta",
+    "me tiene harto",
+    "alguien deberia hacer",
+    "problema horrible",
+    "no hay solucion",
+    "me quejo",
+    "una porqueria",
+    "que fastidio",
+]
+
+
+def _fetch_reddit_subreddits(subreddits: list[str], queries: list[str], days: int, seen: set) -> list[dict]:
     posts = []
-    seen = set()
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
 
-    for subreddit in REDDIT_SUBREDDITS:
-        for query in REDDIT_QUERIES:
+    for subreddit in subreddits:
+        for query in queries:
             try:
                 url = f"https://www.reddit.com/r/{subreddit}/search.json"
                 params = {
@@ -239,6 +258,13 @@ def fetch_reddit(days: int = 30) -> list[dict]:
             except Exception as e:
                 print(f"[Reddit] Error en r/{subreddit} query='{query}': {e}")
 
+    return posts
+
+
+def fetch_reddit(days: int = 30) -> list[dict]:
+    seen = set()
+    posts = _fetch_reddit_subreddits(REDDIT_SUBREDDITS, REDDIT_QUERIES, days, seen)
+    posts += _fetch_reddit_subreddits(REDDIT_SUBREDDITS_ES, REDDIT_QUERIES_ES, days, seen)
     return posts
 
 

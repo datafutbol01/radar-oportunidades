@@ -167,11 +167,86 @@ def fetch_stackoverflow(days: int = 30) -> list[dict]:
     return posts
 
 
+# ── Reddit (API publica JSON) ───────────────────────────────────────────────────
+
+REDDIT_SUBREDDITS = [
+    "SomebodyMakeThis",
+    "Entrepreneur",
+    "startups",
+    "mildlyinfuriating",
+    "rant",
+    "techsupport",
+    "productivity",
+    "smallbusiness",
+]
+
+REDDIT_QUERIES = [
+    "wish there was",
+    "I'd pay for",
+    "nobody builds",
+    "why doesn't exist",
+    "need a tool",
+    "frustrated with",
+    "someone should make",
+    "annoying problem",
+    "no good solution",
+]
+
+
+def fetch_reddit(days: int = 30) -> list[dict]:
+    posts = []
+    seen = set()
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+
+    for subreddit in REDDIT_SUBREDDITS:
+        for query in REDDIT_QUERIES:
+            try:
+                url = f"https://www.reddit.com/r/{subreddit}/search.json"
+                params = {
+                    "q": query,
+                    "sort": "new",
+                    "limit": 50,
+                    "restrict_sr": 1,
+                    "t": "month",
+                }
+                resp = requests.get(url, params=params, headers=HEADERS, timeout=10)
+                if resp.status_code != 200:
+                    continue
+
+                for child in resp.json().get("data", {}).get("children", []):
+                    item = child.get("data", {})
+                    uid = item.get("id", "")
+                    if uid in seen:
+                        continue
+                    seen.add(uid)
+
+                    created_ts = item.get("created_utc", 0)
+                    dt = datetime.fromtimestamp(created_ts, tz=timezone.utc)
+                    if dt < cutoff:
+                        continue
+
+                    text = (item.get("selftext") or "")[:600]
+                    posts.append({
+                        "source": f"Reddit / r/{subreddit}",
+                        "title": item.get("title", ""),
+                        "text": text,
+                        "score": item.get("score", 0),
+                        "url": f"https://reddit.com{item.get('permalink', '')}",
+                        "date": dt.strftime("%Y-%m-%d"),
+                    })
+
+                time.sleep(0.5)
+            except Exception as e:
+                print(f"[Reddit] Error en r/{subreddit} query='{query}': {e}")
+
+    return posts
+
+
 # ── Punto de entrada unificado ─────────────────────────────────────────────────
 
 def fetch_all(days: int = 30, sources: list[str] | None = None) -> list[dict]:
     if sources is None:
-        sources = ["Hacker News", "Stack Overflow"]
+        sources = ["Hacker News", "Stack Overflow", "Reddit"]
 
     all_posts = []
 
@@ -184,6 +259,11 @@ def fetch_all(days: int = 30, sources: list[str] | None = None) -> list[dict]:
         so = fetch_stackoverflow(days=days)
         print(f"[Collector] SO: {len(so)} posts")
         all_posts.extend(so)
+
+    if "Reddit" in sources:
+        rd = fetch_reddit(days=days)
+        print(f"[Collector] Reddit: {len(rd)} posts")
+        all_posts.extend(rd)
 
     # Deduplicar por URL
     seen = set()

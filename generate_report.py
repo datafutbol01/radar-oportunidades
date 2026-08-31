@@ -22,7 +22,7 @@ HISTORY_DIR = DATA_DIR / "history"
 HISTORY_DIR.mkdir(exist_ok=True)
 
 PERIOD_DAYS = 30
-SOURCES = ["Hacker News", "Stack Overflow"]
+SOURCES = ["Hacker News", "Stack Overflow", "Reddit"]
 TOP_N_BRIEFS = 12
 
 

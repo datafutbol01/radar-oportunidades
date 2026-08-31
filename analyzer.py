@@ -23,29 +23,33 @@ BATCH_SIZE = 20  # posts por llamada de clasificacion
 
 
 def _get_client() -> anthropic.Anthropic:
-    # OAuth token (sk-ant-oat01-…): funciona sin anthropic-workspace-id
+    # 1. OAuth token explícito (GitHub Actions)
     oauth_token = os.getenv("ANTHROPIC_OAUTH_TOKEN")
     if oauth_token:
         return anthropic.Anthropic(auth_token=oauth_token)
 
-    # Fallback: leer token OAuth desde credenciales de Claude Code
-    import json
+    # 2. Token desde credenciales de Claude Code (uso local)
+    import json as _json
     creds_path = os.path.expanduser("~/.claude/.credentials.json")
     try:
         with open(creds_path) as f:
-            creds = json.load(f)
+            creds = _json.load(f)
         token = creds.get("claudeAiOauth", {}).get("accessToken", "")
         if token:
             return anthropic.Anthropic(auth_token=token)
     except Exception:
         pass
 
-    # Ultimo recurso: API key estandar (requiere workspace-id si es identity-linked)
+    # 3. API key con workspace ID (si está configurado)
     api_key = os.getenv("ANTHROPIC_API_KEY")
-    if api_key:
-        return anthropic.Anthropic(api_key=api_key)
+    workspace_id = os.getenv("ANTHROPIC_WORKSPACE_ID")
+    if api_key and workspace_id:
+        return anthropic.Anthropic(
+            api_key=api_key,
+            default_headers={"anthropic-workspace-id": workspace_id},
+        )
 
-    raise ValueError("No se encontro ANTHROPIC_OAUTH_TOKEN, ANTHROPIC_API_KEY ni credenciales de Claude Code")
+    raise ValueError("No se encontro autenticacion valida. Configurar ANTHROPIC_OAUTH_TOKEN o credenciales de Claude Code.")
 
 
 # ── 1. Clasificacion ───────────────────────────────────────────────────────────

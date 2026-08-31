@@ -95,13 +95,29 @@ def fetch_hn(days: int = 30) -> list[dict]:
 SE_SITES = [
     # (site, descripcion, intitle_keywords)
     ("softwarerecs", "Software Recs",
-     ["tool for", "alternative to", "software that", "app that", "automate"]),
+     ["tool for", "alternative to", "software that", "app that", "automate",
+      "looking for", "recommend", "need software", "best way to", "open source"]),
     ("ux", "UX Stack Exchange",
-     ["frustrating", "confusing", "bad ux", "improve", "users complain"]),
+     ["frustrating", "confusing", "bad ux", "improve", "users complain",
+      "annoying", "difficult to", "hard to use", "poor experience", "accessibility"]),
     ("stackoverflow", "Stack Overflow",
-     ["not working", "broken", "issue with", "problem with", "failed to"]),
+     ["not working", "broken", "issue with", "problem with", "failed to",
+      "impossible to", "no way to", "limitation", "workaround", "bug in"]),
     ("webapps", "Web Apps SE",
-     ["doesn't work", "missing feature", "alternative", "how to export", "how to cancel"]),
+     ["doesn't work", "missing feature", "alternative", "how to export", "how to cancel",
+      "no longer works", "broken since", "how to automate", "wish there was"]),
+    ("workplace", "Workplace SE",
+     ["frustrated", "problem with", "annoying", "inefficient", "waste of time",
+      "no solution", "bad process", "need a tool", "automate"]),
+    ("money", "Money SE",
+     ["problem with", "frustrated", "alternative", "no way to", "wish there was",
+      "difficult to", "bad experience", "hidden fee"]),
+    ("superuser", "Super User",
+     ["not working", "broken", "alternative to", "how to automate", "no way to",
+      "workaround", "impossible", "limitation", "missing feature"]),
+    ("askubuntu", "Ask Ubuntu",
+     ["not working", "broken", "alternative", "how to automate", "no way to",
+      "workaround", "missing feature", "wish there was"]),
 ]
 
 
@@ -120,7 +136,7 @@ def fetch_stackoverflow(days: int = 30) -> list[dict]:
                     "fromdate": cutoff_ts,
                     "order": "desc",
                     "sort": "creation",
-                    "pagesize": 50,
+                    "pagesize": 100,
                 }
                 if key:
                     params["key"] = key
